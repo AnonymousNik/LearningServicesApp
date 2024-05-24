@@ -7,6 +7,7 @@ function Signup() {
     const [values, setValues] = useState({
         name: '',
         email: '',
+        phone: '',
         password: ''
     })
 
@@ -17,20 +18,26 @@ function Signup() {
     const handleInput = (event) => {
         setValues(prev => ({...prev, [event.target.name]:[event.target.value]}))
     }
-
+    
     const handleSubmit = (event) => {
         event.preventDefault();
-
+        
         const err = Validation(values);
         setErrors(err);
-
-        if(err.name === "" && err.email === "" && err.password === "") {
-            axios.post('http://localhost:8800/signup', values)
+        
+        if(err.name === "" && err.phone === "" && err.email === "" && err.password === "") {
+            axios.post('/users/signup', values)
             .then(res => {
                 navigate('/');
                 console.log(res);
             })
-            .catch(err => console.log(err));
+            // .catch(err => console.log(err));
+            .catch(function (error) {
+                if(error.response.status === 400) {
+                // console.log("User already exists");
+                setErrors({email: "User already exists"});
+                }
+            });
         }
 
     }
@@ -48,6 +55,11 @@ function Signup() {
                 <label htmlFor="email"><strong>Email</strong></label>
                 <input type="email" placeholder='Enter your email address' name='email' onChange={handleInput} className='form-control rounded-0'/>
                 {errors.email && <span className='text-danger'> {errors.email}</span>}
+            </div>
+            <div className='mb-3'>
+                <label htmlFor="phone"><strong>Phone</strong></label>
+                <input type="number" placeholder='Enter your phone number' name='phone' onChange={handleInput} className='form-control rounded-0' size={10}/>
+                {errors.phone && <span className='text-danger'> {errors.phone}</span>}
             </div>
             <div className='mb-3'>
                 <label htmlFor="password"><strong>Password</strong></label>

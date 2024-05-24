@@ -23,7 +23,7 @@ function Login() {
         setErrors(err);
 
         if(err.email === "" && err.password === "") {
-            axios.post('http://localhost:8800/login', values)
+            axios.post('/users/login', values)
             .then(res => {
                 if(res.data === "Success") {
                     navigate('/elearning');

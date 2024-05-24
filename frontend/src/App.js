@@ -4,6 +4,9 @@ import Login from './components/Login'
 import Home from './components/Home'
 import ELearning from './components/ELearning'
 import Signup from './components/Signup'
+import Services from './components/Services'
+import Admin from './components/Admin'
+import Course from './components/Course'
 
 function App() {
 
@@ -15,6 +18,9 @@ function App() {
       <Route path='/login' element = {<Login/>}></Route>
       <Route path='/signup' element = {<Signup/>}></Route>
       <Route path='/elearning' element = {<ELearning/>}></Route>
+      <Route path='/services' element = {<Services/>}></Route>
+      <Route path='/admin' element = {<Admin/>}></Route>
+      <Route path='/course/:id' element = {<Course/>}></Route>
     </Routes>
     </BrowserRouter>
    </div>

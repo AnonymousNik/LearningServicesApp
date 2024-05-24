@@ -26,6 +26,12 @@ function validation(values) {
         error.name = ""
     }
 
+    if(values.phone === "") {
+        error.phone = "Phone number should not be empty"
+    } else{
+        error.phone = ""
+    }
+
     return error;
 }
 
