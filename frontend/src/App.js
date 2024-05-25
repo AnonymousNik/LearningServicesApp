@@ -7,6 +7,7 @@ import Signup from './components/Signup'
 import Services from './components/Services'
 import Admin from './components/Admin'
 import Course from './components/Course'
+import AddCourse from './components/AddCourse'
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
       <Route path='/services' element = {<Services/>}></Route>
       <Route path='/admin' element = {<Admin/>}></Route>
       <Route path='/course/:id' element = {<Course/>}></Route>
+      <Route path='/addcourse' element = {<AddCourse/>}></Route>
     </Routes>
     </BrowserRouter>
    </div>

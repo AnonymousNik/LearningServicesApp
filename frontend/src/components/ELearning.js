@@ -22,7 +22,7 @@ function ELearning() {
         try{
           const res = await axios.get("/courses")
           // console.log(res.data.data);
-          setCourses(res.data.data);
+          setCourses(res.data);
         } catch(err) {
           console.log(err);
         }
@@ -62,6 +62,14 @@ function ELearning() {
       }
     })
 
+    // const img_path = "./public/images/";
+
+    function getImagePath(imgname) {
+      console.log("./public/images"+imgname);
+      // return "./public/images/"+imgname
+      return "C:/Users/'Desktop 007'/Desktop/LearningServicesApp/frontend/public/images/"+imgname
+    }
+
   return (
     <div>
     <Navbar/>
@@ -69,35 +77,36 @@ function ELearning() {
       <select name="filter" onChange={handleAdd}>
         <option value="All"> All</option>
         {category ? category.map((c) => (
-          <option value={c.ccategory} className='bg-light'>{c.ccategory}</option>
+          <option key={c.cid} value={c.ccategory} className='bg-light'>{c.ccategory}</option>
         )): "No data"}
       </select>
-      <ul>
-        {/* {courses ? categoryFilter.map(course => (
+      {/* <ul>
+        {courses ? categoryFilter.map(course => (
         <p>{course.cname}</p>
         
-        )): ""} */}
-      </ul>
+        )): ""}
+      </ul> */}
     </div>
 
     {/* In card form */}
     <div className='p-3 d-flex m-4'>
       {courses.length ? categoryFilter.map((d) => (
-        <div key={d.cid}>
-          <Link to={`/course/${d.cid}`} style={{textDecoration: "none"}}>
+        // <div key={d.cid}>
+        // const img_src = "./public/images"+{d.cimage}
+        <Link to={`/course/${d.cid}`} key={d.cid} style={{textDecoration: "none"}}>
         
           <div className="card m-4" style={{width: "18rem"}}>
-            <img className="card-img-top" src={d.cimage} alt="Card cap"/>
+            <img className="card-img-top" src={`../images/${d.cimage}`} alt="Card cap"/>
               <div className="card-body">
                 <h5 className="card-title">{d.cname}</h5>
                 <p className="card-text">{d.cdescription}</p>
                 <p className="card-text">{d.cfee}</p>
                 <p className="card-text">by {d.vname}</p>
-                <a href="/" className="btn btn-success">Buy Course</a>
+                <Link to={`/course/${d.cid}`} className="btn btn-success">Buy Course</Link>
               </div>
           </div>
           </Link>
-        </div>
+        // </div>
       )) :  <p>No data</p>}
       </div>
     </div>

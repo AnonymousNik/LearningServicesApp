@@ -31,7 +31,7 @@ function Course() {
         {course ? (
 
             <div className='d-flex text-align-center m-5 p-5'>
-            <img src={course[0].cimage} alt='' className='w-50 m-3 border border-dark rounded p-2'/>
+            <img src={`../images/${course[0].cimage}`} alt='' className='w-50 m-3 border border-dark rounded p-2'/>
             <div className='p-5'>
                 <h1>Course name: {course[0].cname}</h1>
                 <p><i>Course description: {course[0].cdescription}</i></p>

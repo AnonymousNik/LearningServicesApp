@@ -1,5 +1,6 @@
 import express from "express"
 import db from "../db.js"
+import multer from "multer"
 
 const router = express.Router()
 
@@ -10,7 +11,7 @@ router.get ('/', (req, res) => {
 
     db.query(q, (err, data) => {
         if(err) return res.json({error:err});
-        return res.json({data: data});
+        return res.json(data);
     })
 })
 
@@ -27,19 +28,32 @@ router.get('/:id', (req, res) => {
     })
 })
 
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        return cb(null, "./public/images")
+    },
+    filename: function(req, file, cb) {
+        return cb(null, `${Date.now()}_${file.originalname}`)
+    }
+})
+
+const upload = multer({storage})
+
 // add new course
-router.post("/add", (req, res) => {
-    const q = "INSERT INTO COURSE(CNAME, CDESCRIPTION, CFEE, CIMAGE, CDURATION, CCATEGORY, CVID) VALUES (?)";
+router.post("/add", upload.single('cimage'), (req, res) => {
+    const q = "INSERT INTO COURSE(CNAME, CDESCRIPTION, CFEE, CDURATION, CCATEGORY, CVID, CIMAGE) VALUES (?)";
 
     const values = [
-        req.body.name,
-        req.body.description,
-        req.body.fee,
-        req.body.image,
-        req.body.duration,
-        req.body.category,
-        req.body.vid,
+        req.body.cname,
+        req.body.cdescription,
+        req.body.cfee,
+        req.body.cduration,
+        req.body.ccategory,
+        req.body.cvid,
+        // req.body.cimage,
+        req.file.filename
     ]
+    console.log(values);
     db.query(q, [values], (err, data) => {
         if(err) return res.json({error: err});
         return res.json({data: data});
