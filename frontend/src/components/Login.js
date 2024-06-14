@@ -23,11 +23,12 @@ function Login() {
         setErrors(err);
 
         if(err.email === "" && err.password === "") {
-            axios.post('/users/login', values)
+            axios.post('users/login', values)
             .then(res => {
-                if(res.data === "Success") {
+                if(res.data.Login) {
+                    localStorage.setItem("token", res.data.token);
                     navigate('/elearning');
-                    console.log(res.data);
+                    // console.log(res.data);
                 } else {
                     console.log(res.data);
                     alert("Incorrect email and password");

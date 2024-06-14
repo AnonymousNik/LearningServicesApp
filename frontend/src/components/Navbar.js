@@ -1,7 +1,42 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 
 function Navbar() {
+
+  const [authStatus, setAuthStatus] = useState(false);
+
+  // const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleAuth = async () => {
+      try {
+        const res = await axios.get('users/checkauth', {
+          headers: {
+            'access-token': localStorage.getItem('token')
+          }
+        })
+        console.log(res.data);
+        if(res.data === 'Authenticated') setAuthStatus(true);
+
+      } catch(err) {
+        console.log(err);
+      }
+    }
+
+    handleAuth();
+
+  }, [])
+
+  const handleLogout = async () => {
+    try{
+      localStorage.removeItem('token')
+      // navigate('/login')
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
   return (
     <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -37,7 +72,9 @@ function Navbar() {
       <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
       <button className="btn btn-outline-success my-2 my-sm-0 m-2" type="submit">Search</button>
     </form>
-    <Link to = {'/login'} className='btn btn-success'>Login</Link>
+    {authStatus ? (<button className='btn btn-danger' onClick={handleLogout}>Logout</button>):
+    (<Link to = {'/login'} className='btn btn-success'>Login</Link>)
+    }
   </div>
 </nav>
     </div>

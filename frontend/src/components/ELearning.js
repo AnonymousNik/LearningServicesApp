@@ -62,13 +62,6 @@ function ELearning() {
       }
     })
 
-    // const img_path = "./public/images/";
-
-    function getImagePath(imgname) {
-      console.log("./public/images"+imgname);
-      // return "./public/images/"+imgname
-      return "C:/Users/'Desktop 007'/Desktop/LearningServicesApp/frontend/public/images/"+imgname
-    }
 
   return (
     <div>
