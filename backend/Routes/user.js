@@ -1,5 +1,10 @@
 import express from "express"
 import db from "../db.js"
+import jwt from "jsonwebtoken"
+// require("dotenv").config()
+import * as dotenv from "dotenv"
+
+dotenv.config()
 
 const router = express.Router()
 
@@ -13,6 +18,25 @@ router.get("/", (req, res) => {
     })
 })
 
+const verifyJwt = (req, res, next) => {
+    const token = req.headers["access-token"];
+    if(!token) {
+        return res.json("Need a token")
+    } else {
+        jwt.verify(token, process.env.REACT_APP_JWT_SECRET, (err, decoded) => {
+            if(err) res.json("Not authenticated")
+            else {
+            req.uid = decoded.id;
+        next();
+    }
+        })
+    }
+}
+
+router.get("/checkauth", verifyJwt, (req, res) => {
+    return res.json("Authenticated");
+})
+
 // LOGIN
 router.post("/login", (req, res) => {
     const q = "SELECT * FROM USER WHERE UEMAIL LIKE ?  AND UPASSWORD LIKE ?";
@@ -21,9 +45,13 @@ router.post("/login", (req, res) => {
         if(err) return res.json(err);
 
         if(data.length > 0) {
-            return res.json("Success");
+            const id = data[0].uid;
+            // console.log("User id: ",id, "jwt secret key: ", process.env.REACT_APP_JWT_SECRET);
+
+            const token = jwt.sign({id}, process.env.REACT_APP_JWT_SECRET, {expiresIn: 300})
+            return res.json({Login: true, token, data});
         } else {
-            return res.json("Failure");
+            return res.json("User login Failure");
         }
     })
 })

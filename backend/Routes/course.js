@@ -28,6 +28,7 @@ router.get('/:id', (req, res) => {
     })
 })
 
+// used multer to store images 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         return cb(null, "./public/images")
@@ -41,6 +42,7 @@ const upload = multer({storage})
 
 // add new course
 router.post("/add", upload.single('cimage'), (req, res) => {
+    
     const q = "INSERT INTO COURSE(CNAME, CDESCRIPTION, CFEE, CDURATION, CCATEGORY, CVID, CIMAGE) VALUES (?)";
 
     const values = [
@@ -53,10 +55,26 @@ router.post("/add", upload.single('cimage'), (req, res) => {
         // req.body.cimage,
         req.file.filename
     ]
-    console.log(values);
+    const bvalues = [
+        req.body.bcapacity,
+        req.body.bintime,
+        req.body.bouttime
+    ]
+    console.log(values, 'batch values: ', bvalues, ' syllabus: ', req.body.syllabus, req.body.syllabus.length, req.body.syllabus[0]);
+    let count = 0
+    // for(let item of req.body.syllabus) {
+    //     console.log(item)
+    //     count += 1
+    // }
+    // console.log(count)
+    let newArray = JSON.parse(req.body.syllabus)
+    console.log(newArray)
+    console.log(newArray.length)
+
     db.query(q, [values], (err, data) => {
-        if(err) return res.json({error: err});
-        return res.json({data: data});
+        if(err) return res.json(err);
+        console.log("\n after executing the query ", data);
+        return res.json(data);
     })
 })
 
