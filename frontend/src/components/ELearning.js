@@ -18,6 +18,7 @@ function ELearning() {
 
     useEffect(() => {
 
+      // get all courses
       const fetchAllCourses = async () => {
         try{
           const res = await axios.get("/courses")
@@ -27,6 +28,8 @@ function ELearning() {
           console.log(err);
         }
       };
+
+      // get all categories
       const fetchAllCategories = async () => {
         try{
           const res = await axios("/category")
@@ -52,7 +55,6 @@ function ELearning() {
     }
 
     // Filtering out array
-    // console.log("courses", courses);
     const categoryFilter = courses.filter((value) => {
       if(selectedCategory === "All") {
         return true

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Validation from './Validations'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import Popup from "reactjs-popup"
 
 function Admin() {
     const [values, setValues] = useState({
@@ -15,6 +16,7 @@ function Admin() {
     // get all vendors list & users list
     const [vendors, setVendors] = useState('');
     const [users, setUsers] = useState('');
+    const [courses, setCourses] = useState('');
 
     const navigate = useNavigate()
 
@@ -58,6 +60,18 @@ function Admin() {
                     console.log(res)
                 }
             }
+
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
+    // get courselist by vendor
+    const handleCoursePerVendor = async (vendor_id) => {
+        try {
+            const res = await axios.get(`courses/v/${vendor_id}`)
+            setCourses(res.data)
+            // console.log(res.data)
 
         } catch(err) {
             console.log(err);
@@ -129,6 +143,7 @@ function Admin() {
                 <th>Vendor email</th>
                 <th>Vendor phone</th>
                 <th>Vendor type</th>
+                <th>Courses</th>
                 <th>Option</th>
             </tr>
             </thead>
@@ -141,6 +156,12 @@ function Admin() {
                 <td>{v.vemail}</td>
                 <td>{v.vphone}</td>
                 <td>{v.vtype}</td>
+                <Popup trigger={<div><button className='btn border-primary' onClick={() =>{handleCoursePerVendor(v.vid)}}>Courses</button></div>}
+                        position={"right center"}>
+                            <div className='bg-light p-4 rounded-2 align-items-left justify-content-left'>
+                                <p className='btn border-success bg-white'>{courses.length ? courses.map((c) => (<p><b>Course name:</b> {c.cname} | <b>fee:</b>  {c.cfee} | <b>duration:</b>  {c.cduration} | <b>category:</b>  {c.ccategory}</p>)):"No courses added"}</p>
+                            </div>
+                        </Popup>
                 <td>
                     <div>
                         <button className='text-success border-success rounded'>Edit</button> / 
