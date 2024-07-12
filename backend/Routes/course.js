@@ -20,10 +20,13 @@ router.get('/:id', (req, res) => {
     const courseId = req.params.id;
 
     // console.log(courseId);
+    // first query
     // const q = "select c.*, v.vname, b.bcapacity, b.in_time, b.out_time, s.scontents from course c,  vendor v, batch b, syllabus s where c.cvid = v.vid and c.cvid = b.vid and s.cid = c.cid and c.cid = ?";
 
-    // issue in query
-    const q = "select c.*, v.vname, b.bcapacity, b.in_time, b.out_time, s.scontents from course c left join vendor v on c.cvid = v.vid join batch b on c.cvid = b.vid left join syllabus s on s.cid = c.cid  and c.cid = ?";
+    // new query
+    // const q = "SELECT COALESCE(c.cid, 'Not available') AS cid, COALESCE(c.cname, 'Not available') AS cname, COALESCE(c.cdescription, 'Not available') AS cdescription, COALESCE(c.cfee, 'Not available') AS cfee, COALESCE(c.cimage, 'Not available') AS cimage, COALESCE(c.cduration, 'Not available') AS cduration, COALESCE(c.ccategory, 'Not available') AS ccategory, COALESCE(c.cvid, 'Not available') AS cvid, COALESCE(b.bid, 'Not available') AS bid, COALESCE(b.bcapacity, 'Not available') AS bcapacity, COALESCE(b.in_time, 'Not available') AS in_time, COALESCE(b.out_time, 'Not available') AS out_time, COALESCE(s.sid, 'Not available') AS sid, COALESCE(s.scontents, 'Not available') AS scontents FROM course c LEFT JOIN batch b ON c.cid = b.cid LEFT JOIN syllabus s ON c.cid = s.cid";
+
+    const q = "select c.cid, c.cname, c.cdescription, c.cfee, c.cimage, c.cduration, c.ccategory, v.vname, b.bcapacity, b.in_time, b.out_time, s.scontents from course c left join batch b on c.cid = b.cid left join syllabus s on c.cid = s.cid left join vendor v on c.cvid = v.vid where c.cid = ?";
 
     db.query(q, [courseId], (err, data) => {
         if(err) return res.json({error: err});

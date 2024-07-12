@@ -8,6 +8,7 @@ import user from "./Routes/user.js"
 import vendor from "./Routes/vendor.js"
 import category from "./Routes/category.js"
 import admin from "./Routes/admin.js"
+import enrolled from "./Routes/enrolled.js"
 
 const app = express()
 
@@ -24,6 +25,7 @@ app.use("/users", user);
 app.use("/vendors", vendor);
 app.use("/category", category);
 app.use("/admin", admin);
+app.use("/enrolled", enrolled);
 
 
 

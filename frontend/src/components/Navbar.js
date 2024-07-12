@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom'
 function Navbar() {
 
   const [authStatus, setAuthStatus] = useState(false);
+  const [userid, setUserid] = useState('')
 
   // const navigate = useNavigate()
 
@@ -16,8 +17,11 @@ function Navbar() {
             'access-token': localStorage.getItem('token')
           }
         })
-        console.log(res.data);
-        if(res.data === 'Authenticated') setAuthStatus(true);
+        // console.log(res.data);
+        if(res.data.status === 'Authenticated'){
+          setAuthStatus(true);
+          setUserid(res.data.userid);
+        }
 
       } catch(err) {
         console.log(err);
@@ -28,9 +32,10 @@ function Navbar() {
 
   }, [])
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try{
       localStorage.removeItem('token')
+      window.location.reload();
       // navigate('/login')
     } catch(err) {
       console.log(err)
@@ -72,7 +77,7 @@ function Navbar() {
       <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
       <button className="btn btn-outline-success my-2 my-sm-0 m-2" type="submit">Search</button>
     </form>
-    {authStatus ? (<button className='btn btn-danger' onClick={handleLogout}>Logout</button>):
+    {authStatus ? (<button className='btn btn-danger' onClick={handleLogout}>Logout ({userid})</button>):
     (<Link to = {'/login'} className='btn btn-success'>Login</Link>)
     }
   </div>

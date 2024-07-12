@@ -40,7 +40,7 @@ function Vendor() {
 
   return (
     <div>
-        <div>
+        <div className='d-flex justify-content-center bg-secondary'>
             <AddCourse vendorId = {vendorId}/>
         </div>
     </div>

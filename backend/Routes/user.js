@@ -34,7 +34,7 @@ const verifyJwt = (req, res, next) => {
 }
 
 router.get("/checkauth", verifyJwt, (req, res) => {
-    return res.json("Authenticated");
+    return res.json({status: "Authenticated", userid: req.uid});
 })
 
 // LOGIN
@@ -48,7 +48,7 @@ router.post("/login", (req, res) => {
             const id = data[0].uid;
             // console.log("User id: ",id, "jwt secret key: ", process.env.REACT_APP_JWT_SECRET);
 
-            const token = jwt.sign({id}, process.env.REACT_APP_JWT_SECRET, {expiresIn: 300})
+            const token = jwt.sign({id}, process.env.REACT_APP_JWT_SECRET, {expiresIn: 3000})
             return res.json({Login: true, token, data});
         } else {
             return res.json("User login Failure");
