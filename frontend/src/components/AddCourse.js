@@ -38,6 +38,8 @@ function AddCourse(props) {
             formData.append('cimage', cimage);
             formData.append('cvid', props.vendorId.current);
 
+            // console.log("Passing vendor id to course backend ", props.vendorId.current);
+
 
             formData.append('bcapacity', bcapacity)
             formData.append('bintime', bintime)
@@ -151,7 +153,7 @@ function AddCourse(props) {
                 </div>
                 <div className='mb-3'>
                     <label htmlFor='cimage'> Course image: </label>
-                    <input type="file" placeholder='Enter course image' name='cimage' className='form-control rounded-0' onChange={(e)=>setCimage(e.target.files[0])}/>
+                    <input type="file" placeholder='Enter course image' name='cimage' className='form-control rounded-0' onChange={(e)=>setCimage(e.target.files[0])} required/>
                 </div>
 
                 {/* batch */}

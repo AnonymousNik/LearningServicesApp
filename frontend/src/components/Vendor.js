@@ -16,12 +16,12 @@ function Vendor() {
             try {
                 const res = await axios.get('vendors/checkauth', {
                     headers: {
-                        "access-token" : localStorage.getItem('vendor_token')
+                        "access-vendor-token" : localStorage.getItem('vendor_token')
                     }
                 })
-                // console.log(res.data)
+                console.log(res.data)
                 // const vendorId = res.data.vendor_id;
-                vendorId.current = res.data.vendor_id;
+                vendorId.current = res.data.vid;
 
                 if(res.data.data !== 'Authenticated') {
                     navigate('/vendor_login')

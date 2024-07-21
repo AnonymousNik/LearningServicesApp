@@ -13,6 +13,8 @@ function ELearning() {
     // }, [])
     // console.log(data);
 
+    const [userid, setUserid] = useState('')
+
     const [courses, setCourses] = useState([]);
     const [category, setCategory] = useState('');
 
@@ -41,8 +43,29 @@ function ELearning() {
         }
       }
 
+      // check user authentication
+      const handleAuth = async () => {
+        try {
+          const res = await axios.get('http://localhost:8800/users/checkauth', {
+            headers: {
+              'access-token': localStorage.getItem('token')
+            }
+          })
+          // console.log("Navbar res ", res.status);
+          if(res.data.status === 'Authenticated' || res.status === 200){
+            // setAuthStatus(true);
+            console.log("res data learning ", res.data)
+            setUserid(res.data.userid);
+          }
+  
+        } catch(err) {
+          console.log(err);
+        }
+      }
+
       fetchAllCourses();
       fetchAllCategories();
+      handleAuth()
     }, []);
 
     // console.log('Courses ', courses);
@@ -60,19 +83,21 @@ function ELearning() {
         return true
       } else {
         // console.log("value.category", value.category, selectedCategory, value.ccategory === selectedCategory);
-        return value.ccategory === selectedCategory
+        return value.CCATEGORY === selectedCategory
       }
     })
 
 
+    console.log("Elearning userid ", userid)
+    console.log("Elearning courses ", courses)
   return (
     <div>
-    <Navbar/>
+    <Navbar userid={userid}/>
     <div className='Filter px-5 mt-5'> <span className='mx-3'>Filter: </span>
       <select name="filter" onChange={handleAdd}>
         <option value="All"> All</option>
         {category ? category.map((c) => (
-          <option key={c.cid} value={c.ccategory} className='bg-light'>{c.ccategory}</option>
+          <option key={c.cid} value={c.CCATEGORY} className='bg-light'>{c.CCATEGORY}</option>
         )): "No data"}
       </select>
       {/* <ul>
@@ -84,13 +109,13 @@ function ELearning() {
     </div>
 
     {/* In card form */}
-    <div className='p-3 d-flex m-4'>
+    <div className='p-3 d-flex m-4 bg-light border border-5 rounded-4'>
       {courses.length ? categoryFilter.map((d) => (
         // <div key={d.cid}>
         // const img_src = "./public/images"+{d.cimage}
         <Link to={`/course/${d.CID}`} key={d.CID} style={{textDecoration: "none"}}>
         
-          <div className="card m-4" style={{width: "18rem"}}>
+          <div className="card m-4 p-2" style={{width: "18rem"}}>
             <img className="card-img-top" src={`../images/${d.CIMAGE}`} alt="Card cap"/>
               <div className="card-body">
                 <h5 className="card-title">{d.CNAME}</h5>

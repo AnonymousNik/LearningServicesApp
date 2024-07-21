@@ -7,7 +7,7 @@ const router = express.Router()
 
 // get all enrolled courses
 router.get('/', (req, res) => {
-    const q = "select * from enrolled_courses";
+    const q = "SELECT * FROM ENROLLED_COURSES";
 
     db.query(q, (err, data) => {
         if(err) return res.json(err);
@@ -17,9 +17,10 @@ router.get('/', (req, res) => {
 
 // get all enrolled_courses by userid
 router.get('/u/:id', (req, res) => {
-    const userId = req.params.uid;
+    const userId = req.params.id;
 
-    const q = "select * from enrolled_courses where uid = ?";
+    console.log("Enrolled courses user id ", req.params)
+    const q = "SELECT * FROM ENROLLED_COURSES WHERE UID LIKE ?";
 
     db.query(q, [userId], (err, data) => {
         if(err) return res.json(err);
@@ -31,7 +32,7 @@ router.get('/u/:id', (req, res) => {
 router.get('/c/:id', (req, res) => {
     const courseId = req.params.cid;
 
-    const q = "select * from enrolled_courses where cid = ?";
+    const q = "SELECT * FROM ENROLLED_COURSES WHERE CID = ?";
 
     db.query(q, [courseId], (err, data) => {
         if(err) return res.json(err);
@@ -46,16 +47,17 @@ router.post('/add', (req, res) => {
         // console.log("Token - ", token);
         // console.log("Headers  - ", req.headers);
         if(!token) return res.json("User token not available")
-        else {
-            jwt.verify(token, process.env.REACT_APP_JWT_SECRET, (err, decoded) => {
-                if(err) {
-                    console.log(err)
-                    return res.json("Error occured in jwt user id - make sure you are using valid details (uid, cid)")
-                } else {
-                    req.uid = decoded.id;
+            else {
+        jwt.verify(token, process.env.REACT_APP_JWT_SECRET, (err, decoded) => {
+            if(err) {
+                console.log(err)
+                return res.json("Error occured in jwt user id - make sure you are using valid details (uid, cid)")
+            } else {
+                req.uid = decoded.id;
+                // console.log("Enrolled course ", req.uid, req.body.cid, decoded)
                 }
             })
-            db.query("insert into enrolled_courses(uid, cid) values(?)", [[req.uid, req.body.cid]], (err, data) => {
+            db.query("INSERT INTO ENROLLED_COURSES(UID, CID) VALUES(?)", [[req.uid, req.body.cid]], (err, data) => {
                 if(err) return res.json(err)
                     return res.json(data);
             })

@@ -2,34 +2,56 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 
-function Navbar() {
+function Navbar(props) {
 
   const [authStatus, setAuthStatus] = useState(false);
   const [userid, setUserid] = useState('')
+  const [userName, setUserName] = useState('')
 
   // const navigate = useNavigate()
 
   useEffect(() => {
-    const handleAuth = async () => {
-      try {
-        const res = await axios.get('users/checkauth', {
-          headers: {
-            'access-token': localStorage.getItem('token')
-          }
-        })
-        // console.log(res.data);
-        if(res.data.status === 'Authenticated'){
-          setAuthStatus(true);
-          setUserid(res.data.userid);
-        }
 
+    console.log(props.userid, props)
+    if(props.userid) {
+      setUserid(props.userid)
+      setAuthStatus(true)
+    }
+
+
+    // get user details with UID ( User ID)
+    const getUserDetailsByUserId = async () => {
+
+      try {
+
+        const res = await axios.get(`http://localhost:8800/users/${userid}`)
+        // console.log(res)
+        // console.log("Username ", res.data.data[0].UNAME);
+        if(res.data) {
+          var uname = res.data.data[0].UNAME;
+        } else { uname = 'User';}
+        setUserName(uname);
       } catch(err) {
-        console.log(err);
+        console.log(err)
       }
     }
 
-    handleAuth();
+    // get enrolled courses by user id
+    const getEnrolledCoursesByUserId = async () => {
+      try{
+        console.log("User id in endrolled course ", userid)
+        const res = await axios.get(`http://localhost:8800/enrolled/u/${userid}`)
+  
+        console.log(res.data)
+      } catch(err) {
+        console.log(err)
+      }
+    }
 
+    getUserDetailsByUserId();
+    getEnrolledCoursesByUserId();
+
+    // eslint-disable-next-line
   }, [])
 
   const handleLogout = () => {
@@ -77,9 +99,12 @@ function Navbar() {
       <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
       <button className="btn btn-outline-success my-2 my-sm-0 m-2" type="submit">Search</button>
     </form>
-    {authStatus ? (<button className='btn btn-danger' onClick={handleLogout}>Logout ({userid})</button>):
+    {authStatus ? (<button className='btn btn-danger' onClick={handleLogout}>Logout <span>({userName})</span></button>):
     (<Link to = {'/login'} className='btn btn-success'>Login</Link>)
     }
+  </div>
+  <div className='mx-5'>
+    <span>My Courses</span>
   </div>
 </nav>
     </div>

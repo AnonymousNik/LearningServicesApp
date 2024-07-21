@@ -17,7 +17,7 @@ router.get("/", (req, res) => {
 let vendor_id = 0;
 
 const verifyJwt = (req, res, next) => {
-    const token = req.headers["access-token"];
+    const token = req.headers["access-vendor-token"];
     if(!token) {
         return res.json("Need a token")
     } else {
@@ -33,7 +33,7 @@ const verifyJwt = (req, res, next) => {
 }
 
 router.get("/checkauth", verifyJwt, (req, res) => {
-    return res.json({vendor_id, data: "Authenticated"})
+    return res.json({vid: vendor_id, data: "Authenticated"})
 })
 
 // Vendor - LOGIN
@@ -46,9 +46,8 @@ router.post('/login', (req, res) => {
         // console.log(data, req.body.email, req.body.password, err)
 
         if(data.length > 0) {
-            const id = data[0].vid;
-
-            const token = jwt.sign({id}, process.env.REACT_APP_JWT_SECRETKEY_VENDOR, {expiresIn:1000})
+            const id = data[0].VID;
+            const token = jwt.sign({id}, process.env.REACT_APP_JWT_SECRETKEY_VENDOR, {expiresIn: '1h'})
             return res.json({Login: true, token, data})
         } else {
             return res.json("Vendor login Failure")

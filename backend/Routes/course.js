@@ -5,12 +5,12 @@ import multer from "multer"
 const router = express.Router()
 
 // get all courses
-router.get ('/', (req, res) => {
+router.get('/', (req, res) => {
     // const q = "SELECT * FROM COURSE";
     const q = "SELECT CID, CNAME, CDESCRIPTION, CFEE, CIMAGE, CDURATION, CCATEGORY, V.VNAME FROM COURSE C,  VENDOR V WHERE C.CVID = V.VID";
 
     db.query(q, (err, data) => {
-        if(err) return res.json({error:err});
+        if(err) return res.json({ error: err });
         return res.json(data);
     })
 })
@@ -29,7 +29,7 @@ router.get('/:id', (req, res) => {
     const q = "SELECT C.CID, C.CNAME, C.CDESCRIPTION, C.CFEE, C.CIMAGE, C.CDURATION, C.CCATEGORY, V.VNAME, B.BCAPACITY, B.IN_TIME, B.OUT_TIME, S.SCONTENTS FROM COURSE C LEFT JOIN BATCH B ON C.CID = B.CID LEFT JOIN SYLLABUS S ON C.CID = S.CID LEFT JOIN VENDOR V ON C.CVID = V.VID WHERE C.CID = ?";
 
     db.query(q, [courseId], (err, data) => {
-        if(err) return res.json({error: err});
+        if(err) return res.json({ error: err });
         return res.json(data);
     })
 })
@@ -48,15 +48,15 @@ router.get('/v/:id', (req, res) => {
 
 // used multer to store images 
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
+    destination: function (req, file, cb) {
         return cb(null, "./public/images")
     },
-    filename: function(req, file, cb) {
+    filename: function (req, file, cb) {
         return cb(null, `${Date.now()}_${file.originalname}`)
     }
 })
 
-const upload = multer({storage})
+const upload = multer({ storage })
 
 // add new course
 router.post("/add", upload.single('cimage'), (req, res) => {
@@ -84,38 +84,39 @@ router.post("/add", upload.single('cimage'), (req, res) => {
         if(err) return res.json(err);
         // console.log("\n after executing the query ", data);
 
-        const {cname, cdescription, cfee, cvid, cduration, ccategory, bcapacity, bintime, bouttime, syllabus} = req.body;
+        const { cname, cdescription, cfee, cvid, cduration, ccategory, bcapacity, bintime, bouttime, syllabus } = req.body;
 
         // to get the course id (CID) of the newly created course to insert batch and syllabus details
         // const cid = getCourseId(cname, cfee, cvid);
-        
+
         db.query("SELECT MIN(CID) AS CID FROM COURSE WHERE CNAME=? AND CFEE=? AND CVID=?", [cname, cfee, cvid], (err, data) => {
             console.log("INSIDE course id select")
             if(err) console.error(err)
-            
+
             // console.log("Complete data ", data)
             // console.log(data[0].CID)
             var cid = data[0].CID;
 
             // insert batch details in batch table
             let intime = formatDateTime(bintime), outtime = formatDateTime(bouttime)
+            console.log("Course id, in time and out time in course backend ", cvid, intime, outtime);
             insertBatchDetails(cvid, cid, bcapacity, intime, outtime);
-              
+
             // insert syllabus details in syllabus table
             insertSyllabusDetails(cid, syllabusArray);
-            
-            
+
+
             console.log("CID from getCourse id: ", cid)
         })
-        
+
 
         //   // insert batch details in batch table
         //   let intime = formatDateTime(bintime), outtime = formatDateTime(bouttime)
         //   await insertBatchDetails(cvid, cid, bcapacity, intime, outtime);
-              
+
         //   // insert syllabus details in syllabus table
         //   await insertSyllabusDetails(cid, syllabusArray);
-          
+
 
 
         return res.json(data);
@@ -134,43 +135,53 @@ function getCourseId(cname, cfee, cvid) {
     db.query("SELECT MIN(CID) AS CID FROM COURSE WHERE CNAME=? AND CFEE=? AND CVID=?", [cname, cfee, cvid], (err, data) => {
         console.log("INSIDE course id select")
         if(err) console.error(err)
-        
+
         console.log("Complete data ", data)
         console.log(data[0].CID)
         var cid = data[0].CID;
     })
-    
+
     return cid
 
 }
 
 // function to insert batch details in batch table
 function insertBatchDetails(cvid, cid, bcapacity, bintime, bouttime) {
-    const batch_query = "INSERT INTO BATCH(VID, CID, BCAPACITY, IN_TIME, OUT_TIME) VALUES(?, ?, ?, ?, ?)";
 
-          db.query(batch_query, [cvid, cid, bcapacity, bintime, bouttime], (err, data) => {
-              console.log("INSIDE batch insert")
-              if(err) console.error(err)
+    try {
+        const batch_query = "INSERT INTO BATCH(VID, CID, BCAPACITY, IN_TIME, OUT_TIME) VALUES(?, ?, ?, ?, ?)";
 
-              console.log("batch details added")
-              // res.json(data)
-            })
+        db.query(batch_query, [cvid, cid, bcapacity, bintime, bouttime], (err, data) => {
+            console.log("INSIDE batch insert")
+            console.log("DATA INSIDE BATCH ", cvid, cid, bcapacity, bintime, bouttime)
+            if(err) console.error(err)
+
+            console.log("batch details added")
+            // res.json(data)
+        })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 // function to insert syllabus in syllabus table
 function insertSyllabusDetails(cid, syllabusArray) {
 
-    for(let i=0; i<syllabusArray.length; i++){
-        let syllabus_query = "INSERT INTO SYLLABUS(CID, SCONTENTS) VALUES(?, ?)";
-            
-        db.query(syllabus_query, [cid, syllabusArray[i]], (err, data) => {
-            console.log("INSIDE syllabus insert")
-            if(err) console.error(err)
-                    
-            // res.json(data)
-        })
+    try {
+        for (let i = 0; i < syllabusArray.length; i++) {
+            let syllabus_query = "INSERT INTO SYLLABUS(CID, SCONTENTS) VALUES(?, ?)";
+
+            db.query(syllabus_query, [cid, syllabusArray[i]], (err, data) => {
+                console.log("INSIDE syllabus insert")
+                if(err) console.error(err)
+
+                // res.json(data)
+            })
+        }
+        console.log("syllabus details have been added")
+    } catch (err) {
+        console.log(err)
     }
-    console.log("syllabus details have been added")
 }
 
 // function to change the datetime format
@@ -179,29 +190,33 @@ function formatDateTime(old_date) {
 
         // separating date, time, and meridiem
         let datetimeArray = old_date.split(" ")
+        if(datetimeArray.length < 2) datetimeArray = datetimeArray[0].split("T")
+
         let date = datetimeArray[0], time = datetimeArray[1]
-        
+        console.log("Date time array ", datetimeArray)
+
         // separating day, month, and year from date
-        let day = date.split("-")[0], month = date.split("-")[1], year = date.split("-")[2]
+        let year = date.split("-")[0], month = date.split("-")[1], day = date.split("-")[2]
 
         // separating hour and minute from time
+        console.log("Time ", time)
         let hour = time.split(":")[0], minute = time.split(":")[1]
 
-        if(datetimeArray.length  > 2) {
+        if(datetimeArray.length > 2) {
             let meridiem = datetimeArray[2]
 
             if(meridiem === 'PM') {
                 let temp = Number(hour)
-                hour = String(temp+12)
+                hour = String(temp + 12)
             }
         }
         // correct formatted date as per mysql
-        let newdate = year+'-'+month+'-'+day+' '+hour+':'+minute
+        let newdate = year + '-' + month + '-' + day + ' ' + hour + ':' + minute
         console.log('PRINTING NEWDATE ', newdate)
 
         return newdate
 
-    } catch(err) {
+    } catch (err) {
         console.log(err)
     }
 
