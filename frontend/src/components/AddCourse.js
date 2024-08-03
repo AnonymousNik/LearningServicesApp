@@ -1,8 +1,13 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-function AddCourse(props) {
+function AddCourse() {
+
+    const navigate = useNavigate('')
+
+    // let vendorId = 0;
+    const [vendorId, setVendorId] = useState(0)
 
     // categories for dropdown
     const [category, setCategory] = useState({})
@@ -36,7 +41,7 @@ function AddCourse(props) {
             formData.append('cduration', cduration);
             formData.append('cfee', cfee);
             formData.append('cimage', cimage);
-            formData.append('cvid', props.vendorId.current);
+            formData.append('cvid', vendorId);
 
             // console.log("Passing vendor id to course backend ", props.vendorId.current);
 
@@ -108,6 +113,28 @@ function AddCourse(props) {
                 }
             }
 
+                    // vendor authentication
+        const handleVendorAuth = async () => {
+            try {
+                const res = await axios.get('vendors/checkauth', {
+                    headers: {
+                        "access-vendor-token" : localStorage.getItem('vendor_token')
+                    }
+                })
+                // console.log(res.data)
+                // const vendorId = res.data.vendor_id;
+                // vendorId.current = res.data.vid;
+                setVendorId(res.data.vid);
+
+                if(res.data.data !== 'Authenticated') {
+                    navigate('/vendor_login')
+                }
+            } catch(err) {
+                console.log(err)
+            }
+        }
+
+        handleVendorAuth();
             fetchAllCategories();
             // eslint-disable-next-line
         }, [])
@@ -115,6 +142,8 @@ function AddCourse(props) {
         // console.log("Syllabus in AddCourse page ", syllabus, "\n", syllabus.length);
         let newArray = syllabus.map(element => element.topic)
         // console.log(newArray)
+
+        // console.log("Vendor id in addcourse page ", vendorId)
 
   return (
     <div className='d-flex justify-content-center align-items-center bg-light'>

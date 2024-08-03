@@ -9,8 +9,11 @@ import Admin from './components/Admin'
 import Course from './components/Course'
 import AddCourse from './components/AddCourse'
 import AdminLogin from './components/AdminLogin'
-import VendorLogin from './components/VendorLogin'
-import Vendor from './components/Vendor'
+import VendorLogin from './components/Vendor/VendorLogin'
+import Vendor from './components/Vendor/Vendor'
+import TotalEnrolledUsers from './components/Vendor/TotalEnrolledUsers'
+import Order from './components/Order'
+import MyCourses from './components/MyCourses'
 
 function App() {
 
@@ -29,6 +32,9 @@ function App() {
       <Route path='/addcourse' element = {<AddCourse/>}></Route>
       <Route path='/vendor_login' element = {<VendorLogin/>}></Route>
       <Route path='/vendor' element = {<Vendor/>}></Route>
+      <Route path='/totalenrolledusers/:vendorId' element = {<TotalEnrolledUsers/>}></Route>
+      <Route path='/order' element = {<Order/>}></Route>
+      <Route path='/mycourses' element = {<MyCourses/>}></Route>
     </Routes>
     </BrowserRouter>
    </div>

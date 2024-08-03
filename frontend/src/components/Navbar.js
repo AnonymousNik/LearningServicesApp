@@ -2,34 +2,56 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 
-function Navbar(props) {
+
+// dotenv.config()
+
+function Navbar() {
 
   const [authStatus, setAuthStatus] = useState(false);
-  const [userid, setUserid] = useState('')
+  const [userid, setUserid] = useState(0)
   const [userName, setUserName] = useState('')
+  const [myCourseCount, setMyCourseCount] = useState(0)
 
   // const navigate = useNavigate()
 
   useEffect(() => {
 
-    console.log(props.userid, props)
-    if(props.userid) {
-      setUserid(props.userid)
-      setAuthStatus(true)
+    const userAuth = async () => {
+      try {
+        const res = await axios.request({
+          method: "POST",
+          url: `http://localhost:8800/users/checkauth`,
+          headers: {"access-token": localStorage.getItem("token")}
+        })
+
+      //   console.log("User auth res ", res)
+        if(res.data.auth_status === "Authenticated") {
+          setAuthStatus(true)
+          setUserid(res.data.userid)
+
+        }
+
+      } catch(err) {
+        console.log(err)
+      }
     }
 
 
+
     // get user details with UID ( User ID)
-    const getUserDetailsByUserId = async () => {
+    const getUserDetailsByUserId = async (uid) => {
 
       try {
 
-        const res = await axios.get(`http://localhost:8800/users/${userid}`)
-        // console.log(res)
-        // console.log("Username ", res.data.data[0].UNAME);
-        if(res.data) {
-          var uname = res.data.data[0].UNAME;
-        } else { uname = 'User';}
+        const res = await axios.get(`http://localhost:8800/users/${uid}`)
+
+        console.log("User id ", uid)
+        console.log("User res data ", res.data, uid)
+        // console.log("Username ", res.data[0].UNAME);
+
+        if(res.data.length > 0) {
+          var uname = res.data[0].UNAME;
+        } else { uname = '';}
         setUserName(uname);
       } catch(err) {
         console.log(err)
@@ -37,19 +59,22 @@ function Navbar(props) {
     }
 
     // get enrolled courses by user id
-    const getEnrolledCoursesByUserId = async () => {
+    const getEnrolledCoursesByUserId = async (uid) => {
       try{
-        console.log("User id in endrolled course ", userid)
-        const res = await axios.get(`http://localhost:8800/enrolled/u/${userid}`)
+        console.log("User id in endrolled course ", uid)
+        const res = await axios.get(`http://localhost:8800/enrolled/u/${uid}`)
   
-        console.log(res.data)
+        console.log("Navbar.js getEnrolledCoursesByUserId ", res.data)
+        setMyCourseCount(res.data.length)
       } catch(err) {
         console.log(err)
       }
     }
 
-    getUserDetailsByUserId();
-    getEnrolledCoursesByUserId();
+    userAuth();
+
+    getUserDetailsByUserId(userid);
+    getEnrolledCoursesByUserId(userid);
 
     // eslint-disable-next-line
   }, [])
@@ -57,12 +82,16 @@ function Navbar(props) {
   const handleLogout = () => {
     try{
       localStorage.removeItem('token')
+      setAuthStatus(false)
       window.location.reload();
       // navigate('/login')
+
     } catch(err) {
       console.log(err)
     }
   }
+
+  console.log("user Auth status ", authStatus, userid)
 
   return (
     <div>
@@ -99,12 +128,12 @@ function Navbar(props) {
       <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
       <button className="btn btn-outline-success my-2 my-sm-0 m-2" type="submit">Search</button>
     </form>
-    {authStatus ? (<button className='btn btn-danger' onClick={handleLogout}>Logout <span>({userName})</span></button>):
+    {authStatus ? (<button className='btn btn-danger' onClick={handleLogout}>Logout <span> {userName}</span></button>):
     (<Link to = {'/login'} className='btn btn-success'>Login</Link>)
     }
   </div>
   <div className='mx-5'>
-    <span>My Courses</span>
+    <Link to={'/mycourses'} className='d-flex text-decoration-none text-dark'>My Courses {myCourseCount>0 && <p> ({myCourseCount}) </p>}</Link>
   </div>
 </nav>
     </div>

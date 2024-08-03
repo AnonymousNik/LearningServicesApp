@@ -36,7 +36,7 @@ function Admin() {
             
             // vendor validations
             if(err.name === "" && err.email === "" && err.password === "") {
-                const res = await axios.post('vendors/add_vendor', values)
+                const res = await axios.post('http://localhost:8800/vendors/add_vendor', values)
                 window.location.reload();
                 console.log(res.data)
                 if(res.data === "Vendor already exists") alert("Vendor already exists");
@@ -56,7 +56,7 @@ function Admin() {
                     setVendors(v);
                     
                     // console.log(vendors, vendors.vid)
-                    const res = await axios.delete(`vendors/delete/${vendor_id}`)
+                    const res = await axios.delete(`http://localhost:8800/vendors/delete/${vendor_id}`)
                     console.log(res)
                 }
             }
@@ -69,9 +69,9 @@ function Admin() {
     // get courselist by vendor
     const handleCoursePerVendor = async (vendor_id) => {
         try {
-            const res = await axios.get(`courses/v/${vendor_id}`)
+            const res = await axios.get(`http://localhost:8800/courses/v/${vendor_id}`)
             setCourses(res.data)
-            // console.log(res.data)
+            // console.log("Admin.js HandleCoursePerVendor ", res.data, vendor_id)
 
         } catch(err) {
             console.log(err);
@@ -84,7 +84,7 @@ function Admin() {
         // get all vendors list
         const fetchAllVendors = async () => {
             try{
-                const res = await axios.get("vendors")
+                const res = await axios.get("http://localhost:8800/vendors")
                 // console.log(res.data.data);
                 setVendors(res.data.data);
             } catch(err) {
@@ -95,7 +95,7 @@ function Admin() {
         // get all users list
         const fetchAllUsers = async () => {
             try{
-                const res = await axios.get("users")
+                const res = await axios.get("http://localhost:8800/users")
                 // console.log(res.data.data);
                 setUsers(res.data.data);
             } catch(err) {
@@ -106,7 +106,7 @@ function Admin() {
         // verify admin auth
         const handleAdminAuth = async () => {
             try {
-                const res = await axios.get('admin/checkauth', {
+                const res = await axios.get('http://localhost:8800/admin/checkauth', {
                     headers: {
                         'access-token': localStorage.getItem('admin_token')
                     }
@@ -156,16 +156,16 @@ function Admin() {
                 <td>{v.VEMAIL}</td>
                 <td>{v.VPHONE}</td>
                 <td>{v.VTYPE}</td>
-                <Popup trigger={<div><button className='btn border-primary' onClick={() =>{handleCoursePerVendor(v.vid)}}>Courses</button></div>}
+                <Popup trigger={<div><button className='btn border-primary' onClick={() =>{handleCoursePerVendor(v.VID)}}>Courses</button></div>}
                         position={"right center"}>
-                            <div className='bg-light p-4 rounded-2 align-items-left justify-content-left'>
-                                <p className='btn border-success bg-white'>{courses.length ? courses.map((c) => (<p><b>Course name:</b> {c.cname} | <b>fee:</b>  {c.cfee} | <b>duration:</b>  {c.cduration} | <b>category:</b>  {c.ccategory}</p>)):"No courses added"}</p>
+                            <div className='bg-secondary p-4 rounded-2 align-items-left justify-content-left'>
+                                <p className='btn border-success bg-white'>{courses.length ? courses.map((c) => (<p><b>Course name:</b> {c.CNAME} | <b>fee:</b>  {c.CFEE} | <b>duration:</b>  {c.CDURATION} | <b>category:</b>  {c.CCATEGORY}</p>)):"No courses added yet"}</p>
                             </div>
                         </Popup>
                 <td>
                     <div>
                         <button className='text-success border-success rounded'>Edit</button> / 
-                        <button className='text-danger border-danger rounded mx-1' onClick={() => {handleDeleteVendorById(v.vid)}}>Delete</button>
+                        <button className='text-danger border-danger rounded mx-1' onClick={() => {handleDeleteVendorById(v.VID)}}>Delete</button>
                     </div>
                 </td>
             </tr>

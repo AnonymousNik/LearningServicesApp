@@ -38,7 +38,7 @@ router.post("/", (req, res) => {
             const id = data[0].aid;
 
             // console.log("Secret key: ", process.env.REACT_APP_JWT_SECRETKEY_ADMIN);
-            const token = jwt.sign({id}, process.env.REACT_APP_JWT_SECRETKEY_ADMIN, {expiresIn: 300})
+            const token = jwt.sign({id}, process.env.REACT_APP_JWT_SECRETKEY_ADMIN, {expiresIn: '1h'})
             return res.json({Login:true, token, data});
         } else {
             return res.json("Failure");

@@ -28,7 +28,7 @@ router.get("/", (req, res) => {
 router.get('/:id', (req, res) => {
     const q = 'SELECT * FROM USER WHERE UID LIKE ?';
 
-    db.query(q, [req.params.UID], (err, data) => {
+    db.query(q, [req.params.id], (err, data) => {
         if(err) return res.json(err)
         return res.json(data)
     })
@@ -37,11 +37,14 @@ router.get('/:id', (req, res) => {
 // verify user with jwt token created while login
 const verifyJwt = (req, res, next) => {
     const token = req.headers["access-token"];
+    // const token = req.body.token;
+    // console.log("Inside verifyjwt token ", token)
+    
     if(!token) {
-        return res.json("Need a token")
+        res.json("Need a token")
     } else {
         jwt.verify(token, process.env.REACT_APP_JWT_SECRET, (err, decoded) => {
-            if(err) res.json("Not authenticated")
+            if(err) res.json({error: "Not authenticated", err})
             else {
                 req.uid = decoded.id;
                 next();
@@ -50,11 +53,13 @@ const verifyJwt = (req, res, next) => {
     }
 }
 
-router.get("/checkauth", verifyJwt, (req, res) => {
-    return res.json({ status: "Authenticated", userid: req.uid });
+// to check user authentication URL: http://localhost:8800/users/checkauth
+router.post("/checkauth", verifyJwt, (req, res) => {
+    // console.log("Check auth requested with user id ", req.uid);
+    return res.json({auth_status: "Authenticated", userid: req.uid});
 })
 
-// LOGIN
+// LOGIN URL: http://localhost:8800/users/login
 router.post("/login", (req, res) => {
     const q = "SELECT * FROM USER WHERE UEMAIL LIKE ?  AND UPASSWORD LIKE ?";
 

@@ -23,7 +23,7 @@ function Login() {
         setErrors(err);
 
         if(err.email === "" && err.password === "") {
-            axios.post('users/login', values)
+            axios.post('http://localhost:8800/users/login', values)
             .then(res => {
                 if(res.data.Login) {
                     localStorage.setItem("token", res.data.token);

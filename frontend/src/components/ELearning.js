@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import {Container, Row, Col} from "react-bootstrap"
 
 function ELearning() {
     // const [data, setData] = useState('');
@@ -23,7 +24,7 @@ function ELearning() {
       // get all courses
       const fetchAllCourses = async () => {
         try{
-          const res = await axios.get("/courses")
+          const res = await axios.get("http://localhost:8800/courses")
           // console.log(res.data.data);
           setCourses(res.data);
         } catch(err) {
@@ -34,7 +35,7 @@ function ELearning() {
       // get all categories
       const fetchAllCategories = async () => {
         try{
-          const res = await axios("/category")
+          const res = await axios("http://localhost:8800/category")
           // console.log(res.data);
           setCategory(res.data);
           // console.log(category[1].ccategory);
@@ -46,13 +47,13 @@ function ELearning() {
       // check user authentication
       const handleAuth = async () => {
         try {
-          const res = await axios.get('http://localhost:8800/users/checkauth', {
+          const res = await axios.get(`http://localhost:8800/users/checkauth`, {
             headers: {
               'access-token': localStorage.getItem('token')
             }
           })
           // console.log("Navbar res ", res.status);
-          if(res.data.status === 'Authenticated' || res.status === 200){
+          if(res.data.auth_status === 'Authenticated' || res.status === 200){
             // setAuthStatus(true);
             console.log("res data learning ", res.data)
             setUserid(res.data.userid);
@@ -89,7 +90,7 @@ function ELearning() {
 
 
     console.log("Elearning userid ", userid)
-    console.log("Elearning courses ", courses)
+    // console.log("Elearning courses ", courses)
   return (
     <div>
     <Navbar userid={userid}/>
@@ -109,26 +110,34 @@ function ELearning() {
     </div>
 
     {/* In card form */}
-    <div className='p-3 d-flex m-4 bg-light border border-5 rounded-4'>
+    <Container>
+
+    <div className='p-5 d-flex m-1 bg-light border border-5 rounded-4' style={{width:"auto", height:"auto"}}>
+      <Row xs={1} md={4} className='g-4'>
       {courses.length ? categoryFilter.map((d) => (
         // <div key={d.cid}>
         // const img_src = "./public/images"+{d.cimage}
+
         <Link to={`/course/${d.CID}`} key={d.CID} style={{textDecoration: "none"}}>
         
-          <div className="card m-4 p-2" style={{width: "18rem"}}>
-            <img className="card-img-top" src={`../images/${d.CIMAGE}`} alt="Card cap"/>
+          <div className="card m-1 p-2" style={{width: "18rem", height: "28rem"}}>
+            <Col>
+            <img className="card-img-top" src={`../images/${d.CIMAGE}`} alt="Card cap" style={{height:"11rem"}}/>
               <div className="card-body">
                 <h5 className="card-title">{d.CNAME}</h5>
-                <p className="card-text">{d.CDESCRIPTION}</p>
+                <p className="card-text" style={{height:"3rem"}}>{d.CDESCRIPTION}</p>
                 <p className="card-text">{d.CFEE}</p>
-                <p className="card-text">by {d.VNAME}</p>
-                <Link to={`/course/${d.CID}`} className="btn btn-success">Buy Course</Link>
+                <p className="card-text">Author: {d.VNAME}</p>
+                <Link to={`/course/${d.CID}`} className="text-decoration-none text-secondary"><span><i>Click here to Buy Course</i></span></Link>
               </div>
+            </Col>
           </div>
           </Link>
-        // </div>
       )) :  <p>No data</p>}
+        </Row>
       </div>
+      </Container>
+
     </div>
   // In table form
   //   <div style={{padding: "50px"}}>
